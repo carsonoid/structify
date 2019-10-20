@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	"bufio"
+	"os"
 
 	"github.com/ghodss/yaml"
 	"github.com/sanity-io/litter"
@@ -10,16 +10,13 @@ import (
 )
 
 func main() {
-	y, err := ioutil.ReadFile("{{ .FilePath }}")
-	if err != nil {
-		panic(err)
-	}
+	s := bufio.NewScanner(os.Stdin)
+
+	s.Scan()
 
 	var o typepkg.{{ .Kind }}
-	err = yaml.Unmarshal(y, &o)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-		return
+	if err := yaml.Unmarshal(s.Bytes(), &o); err != nil {
+		panic(err)
 	}
 
 	litter.Dump(o)

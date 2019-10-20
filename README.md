@@ -5,5 +5,5 @@ Take in Kubernetes objects as YAML or JSON and print out golang structs for use 
 # Usage
 
 ```bash
-go run main.go examples/job.yml  && go run dumpers/test.go
+go run main.go examples/job.yml
 ```

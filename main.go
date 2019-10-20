@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"text/template"
 
 	"github.com/ghodss/yaml"
@@ -56,16 +57,15 @@ func main() {
 		apiVersion = "core/v1"
 	}
 
-	dynamicDump(apiVersion, kind, filePath)
+	dynamicDump(apiVersion, kind, y)
 }
 
 type dumperInput struct {
 	APIVersion string
 	Kind       string
-	FilePath   string
 }
 
-func dynamicDump(apiVersion, kind, filePath string) {
+func dynamicDump(apiVersion string, kind string, data []byte) {
 
 	tmpl, err := template.New("dumper").ParseFiles("templates/dumper.go.tpl")
 	if err != nil {
@@ -77,11 +77,31 @@ func dynamicDump(apiVersion, kind, filePath string) {
 	err = tmpl.ExecuteTemplate(&b, "dumper.go.tpl", dumperInput{
 		APIVersion: apiVersion,
 		Kind:       kind,
-		FilePath:   filePath,
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	ioutil.WriteFile("dumpers/test.go", b.Bytes(), 0600)
+
+	// Run generated dumper. Pass data via stdin
+	fmt.Println("Running generated dumper")
+	dumper := exec.Command("go", "run", "dumpers/test.go")
+
+	stdin, err := dumper.StdinPipe()
+	if err != nil {
+		panic(err)
+	}
+	defer stdin.Close()
+
+	dumper.Stdout = os.Stdout
+	dumper.Stderr = os.Stderr
+
+	if err := dumper.Start(); err != nil {
+		panic(err)
+	}
+
+	stdin.Write(data)
+
+	dumper.Wait()
 }
