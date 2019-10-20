@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    objectset.rio.cattle.io/applied: H4sIAAAAAAAA/6xUzW7zNhB8lWKB70bJki0rloAc3MJF0qSOESe5FEGwpFc2a4oSyJWLNNC7F3TcWEF/cvmO0s7O7s4M+AZ7bTdQwi+NBAHY6idyXjcWSpDIajc6pCCgJsYNMkL5BhZrghJ2ZOpIW89oTMQOqdJ7EMeqb1EFyL6TFPlXz1SDAOUIWTf2QdfkGesWStsZI8CgJOMDdeCM9xMfK2Q2FOtmpHboGEo4T2jk76TYE8dONwPkDv0OSsjlLEuTYjZOsrQiJKLJbJpOLvINqVzlY5wkuUwmCnoBaG3Dx6WO4/+LWQeBwlphv//ZoPnDkou2h/0Jfq4cUvHDjbabyysy9U/Hk76iOcn89d1n+L/p3vcCfEsq3CdR7ZuqutW1ZijTJEkEMNWtQaZQH7r8fdwaTleNZdSWnIfyt08xAgG6xm34dGjVjtxob3TbkotCuTwkcRpPQzzdNjTDKXYgIHrXSQx02jG3vhyNvr3dPP64uF8uHhbrl/nquv828sFs9b6lH51aojTOsziJefvnkdATR56dtlsQ4CSqmCxKQ5tLdh39E+K9+Yx4FkD2MDxyOf91AQIOaLqhp734QDwt7tfXd8vhr/vF6u4TZH77uFi/XM3XVwMumshEZdm4mFUqVWlWYCWrTM2KIq9kMc7GF0hZSlmeFbKYZAqzYloUqbyYTcdyNp1C/yzAkW86pyjY2p/MWHXGrBqj1SuUcF0tG1458mT57w5Gxx+AO/szatO5oI8nd9CK5ko1neXl4Lk4xyLkgpG748T+rwAAAP//wnaFWoYEAAA
+    objectset.rio.cattle.io/id: k3s.helm
+    objectset.rio.cattle.io/inputid: 12591c878bf5e093efa0eb8525ce76ecafa66239
+    objectset.rio.cattle.io/owner-gvk: k3s.cattle.io/v1, Kind=HelmChart
+    objectset.rio.cattle.io/owner-name: traefik
+    objectset.rio.cattle.io/owner-namespace: kube-system
+  creationTimestamp: "2019-10-20T19:05:25Z"
+  labels:
+    cattle.io/creator: norman
+    helm.k3s.cattle.io/chart: traefik
+    objectset.rio.cattle.io/hash: 6b8410982041feaeee3851376dec6c62a306b03c
+  name: helm-install-traefik
+  namespace: kube-system
+  resourceVersion: "341"
+  selfLink: /apis/batch/v1/namespaces/kube-system/jobs/helm-install-traefik
+  uid: 9270716e-f36c-11e9-8c11-0242ac180002
+spec:
+  backoffLimit: 1000
+  completions: 1
+  parallelism: 1
+  selector:
+    matchLabels:
+      controller-uid: 9270716e-f36c-11e9-8c11-0242ac180002
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        controller-uid: 9270716e-f36c-11e9-8c11-0242ac180002
+        helm.k3s.cattle.io/chart: traefik
+        job-name: helm-install-traefik
+    spec:
+      containers:
+      - args:
+        - install
+        - --name
+        - traefik
+        - https://%{KUBERNETES_API}%/static/charts/traefik-1.64.0.tgz
+        - --set-string
+        - rbac.enabled=true
+        - --set-string
+        - ssl.enabled=true
+        env:
+        - name: NAME
+          value: traefik
+        - name: VERSION
+        - name: REPO
+        - name: VALUES_HASH
+          value: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+        image: rancher/klipper-helm:v0.1.5
+        imagePullPolicy: IfNotPresent
+        name: helm
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: helm-traefik
+      serviceAccountName: helm-traefik
+      terminationGracePeriodSeconds: 30
+status:
+  completionTime: "2019-10-20T19:05:50Z"
+  conditions:
+  - lastProbeTime: "2019-10-20T19:05:50Z"
+    lastTransitionTime: "2019-10-20T19:05:50Z"
+    status: "True"
+    type: Complete
+  startTime: "2019-10-20T19:05:38Z"
+  succeeded: 1
