@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"text/template"
 
 	"github.com/ghodss/yaml"
@@ -20,6 +21,8 @@ var (
 
 	serve     = kingpin.Command("serve", "Start Structify service")
 	serveAddr = serve.Flag("addr", "Listen address for server").Default(":8080").String()
+
+	sanRegex = regexp.MustCompile("[^a-zA-Z0-9]+")
 )
 
 func main() {
@@ -107,9 +110,12 @@ func getStructBytes(data []byte) []byte {
 		panic(err)
 	}
 
-	writeDumper(apiVersion, kind)
+	dumperPath, err := writeDumper(apiVersion, kind)
+	if err != nil {
+		panic(err)
+	}
 
-	results, err := getDumperResults(data)
+	results, err := getDumperResults(dumperPath, data)
 	if err != nil {
 		panic(err)
 	}
@@ -158,9 +164,9 @@ type dumperInput struct {
 	Kind       string
 }
 
-func getDumperResults(data []byte) ([]byte, error) {
+func getDumperResults(dumperPath string, data []byte) ([]byte, error) {
 	fmt.Fprintf(os.Stderr, "Running generated dumper\n")
-	dumper := exec.Command("go", "run", "dumpers/test.go")
+	dumper := exec.Command("go", "run", dumperPath)
 
 	// stdin comes from given data
 	dumper.Stdin = bytes.NewBuffer(data)
@@ -182,10 +188,21 @@ func getDumperResults(data []byte) ([]byte, error) {
 	return stdout.Bytes(), nil
 }
 
-func writeDumper(apiVersion, kind string) error {
+func writeDumper(apiVersion, kind string) (string, error) {
+	// Sanitized path
+	dumperPath := fmt.Sprintf("dumpers/%s_%s.go",
+		sanRegex.ReplaceAllString(apiVersion, "-"),
+		sanRegex.ReplaceAllString(kind, "-"),
+	)
+
+	// Don't gen pre-existing file
+	if _, err := os.Stat(dumperPath); err == nil {
+		return dumperPath, nil
+	}
+
 	tmpl, err := template.New("dumper").ParseFiles("templates/dumper.go.tpl")
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	var b bytes.Buffer
@@ -194,9 +211,10 @@ func writeDumper(apiVersion, kind string) error {
 		Kind:       kind,
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
-	ioutil.WriteFile("dumpers/test.go", b.Bytes(), 0600)
 
-	return nil
+	ioutil.WriteFile(dumperPath, b.Bytes(), 0600)
+
+	return dumperPath, nil
 }

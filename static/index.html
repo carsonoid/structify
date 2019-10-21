@@ -95,6 +95,7 @@ button:active {
 }
 
 textarea {
+    z-index: -1;
     height: 100%;
     width: 100%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -104,6 +105,28 @@ textarea {
 
 .output {
     background: lightgrey;
+}
+
+#loader {
+    border: 16px solid #316CE6;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+
+    z-index: 100;
+    position: absolute;
+    right: 23%;
+    top: 45%;
+    transform: translateY(-50%);
+
+    display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
 <script>
@@ -119,7 +142,9 @@ function submit() {
     xhr.onload  = function() {
         var jsonResponse = JSON.parse(xhr.responseText);
         document.getElementById("results").value = jsonResponse.struct
+        document.getElementById("loader").style.display = "none";
     };
+    document.getElementById("loader").style.display = "block";
     xhr.send(d);
 }
 </script>
@@ -143,6 +168,7 @@ spec: ...
   TypeMeta: ...
   ObjectMeta: ...
 }" readonly></textarea>
+        <div id="loader"></div>
     </div>
 </div>
 <div id="footer">
