@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<style>
+* {
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    position: absolute;
+    top: 40px; /* Header Height */
+    bottom: 20px; /* Footer Height */
+    width: 100%;
+}
+
+/* Create two equal columns that sits next to each other */
+.column {
+    flex: 50%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+    height: 100%;
+}
+
+textarea {
+    height: 100%;
+    width: 100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+</style>
+<script>
+function submit() {
+    var data = document.getElementById("data").value
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/structify", true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    var d = JSON.stringify({
+        "data": data
+    })
+    xhr.onload  = function() {
+        var jsonResponse = JSON.parse(xhr.responseText);
+        document.getElementById("results").value = jsonResponse.struct
+    };
+    xhr.send(d);
+}
+</script>
+</head>
+<body>
+<div class="row">
+    <div class="column">
+        <textarea id="data" value=""></textarea><br />
+        <button id="submit" onclick="submit()">submit</button>
+    </div>
+    <div class="column">
+        <textarea id="results" value="" edit=false readonly></textarea>
+    </div>
+</div>
+</body>
+</html>

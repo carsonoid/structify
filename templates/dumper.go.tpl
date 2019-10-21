@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	"io/ioutil"
 	"os"
 
 	"github.com/ghodss/yaml"
@@ -10,12 +10,13 @@ import (
 )
 
 func main() {
-	s := bufio.NewScanner(os.Stdin)
-
-	s.Scan()
+	b, err := ioutil.ReadAll(os.Stdin)
+	if err != nil {
+		panic(err)
+	}
 
 	var o typepkg.{{ .Kind }}
-	if err := yaml.Unmarshal(s.Bytes(), &o); err != nil {
+	if err := yaml.Unmarshal(b, &o); err != nil {
 		panic(err)
 	}
 

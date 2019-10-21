@@ -10,16 +10,3 @@ metadata:
   resourceVersion: "601"
   selfLink: /api/v1/namespaces/default/configmaps/test
   uid: 37419574-f36e-11e9-8c11-0242ac180002
----
-apiVersion: v1
-data:
-  testkey1: testvalue1
-  testkey2: testvalue2
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2019-10-20T19:17:11Z"
-  name: test2
-  namespace: default
-  resourceVersion: "601"
-  selfLink: /api/v1/namespaces/default/configmaps/test
-  uid: 37419574-f36e-11e9-8c11-0242ac180002
