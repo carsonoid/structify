@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 	"text/template"
 
 	"github.com/ghodss/yaml"
@@ -190,6 +191,7 @@ func getDumperResults(dumperPath string, data []byte) ([]byte, error) {
 
 func writeDumper(apiVersion, kind string) (string, error) {
 	// Sanitized path
+	apiVersion = strings.Replace(apiVersion, ".k8s.io", "", 1)
 	dumperPath := fmt.Sprintf("dumpers/%s_%s.go",
 		sanRegex.ReplaceAllString(apiVersion, "-"),
 		sanRegex.ReplaceAllString(kind, "-"),
