@@ -97,6 +97,9 @@ func (s *dumpState) newlineWithPointerNameComment() {
 
 func (s *dumpState) dumpType(v reflect.Value) {
 	pkgPath := v.Type().PkgPath()
+	if v.Kind() == reflect.Slice {
+		pkgPath = v.Type().Elem().PkgPath()
+	}
 	pkgParts := strings.Split(pkgPath, "/")
 	typeName := v.Type().String()
 	typeParts := strings.Split(typeName, ".")
