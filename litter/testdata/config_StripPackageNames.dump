@@ -1,0 +1,16 @@
+[]interface {}{
+  options{
+    Compact: false,
+    StripPackageNames: false,
+    HidePrivateFields: true,
+    HomePackage: "",
+    Separator: " ",
+  },
+  &BasicStruct{
+    Public: 1,
+    private: 2,
+  },
+  Function,
+  Dump,
+  func(string, int) (bool, error),
+}
